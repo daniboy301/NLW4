@@ -1,44 +1,61 @@
-import styles from '../styles/components/ChalengeBox.module.css'
+import { useContext } from 'react';
+import { ChallengesContext } from '../contexts/ChallengesContext';
+import { CountdownContext } from '../contexts/CountdownContext';
+import styles from '../styles/components/ChalengeBox.module.css';
+
 
 export function ChalengeBox() {
-    const hasActiveChalenge = true;
+  const { activeChallenge, resetChallenge, completeChallenge } = useContext(ChallengesContext);
+  const { resetCountdown } = useContext(CountdownContext);
 
-    return (
-        <div className={styles.chalengeBoxContainer}>
-            { hasActiveChalenge ? (
-                <div className={styles.chalengeActive}>
-                    <header>Ganhe 400xp</header>
+  function handleChallengeSucceeded() {
+    completeChallenge();
+    resetCountdown();
+  }
 
-                    <main>
-                        <img src="icons/body.svg"/>
-                        <strong>Novo desafio</strong>
-                        <p>Levante e faça uma caminhada de 3 minutos</p>
-                    </main>
+  function handleChallengeFailed() {
+    resetChallenge();
+    resetCountdown();
+  }
 
-                    <footer>
-                        <button 
-                            type="button"
-                            className={styles.challengeFailedButton}
-                        >
-                            Falhei
-                        </button>
-                        <button 
-                            type="button"
-                            className={styles.challengeSucceededButton}
-                        >
-                            Completei
-                        </button>
-                    </footer>
-                </div>
-            ) : (
-                <div className={styles.chalengeNotActive}>
-                    <strong>Finalize um ciclo para receber um desafio</strong>
-                    <p>
-                        <img src="icons/level-up.svg" alt="Level Up"/>
-                        Avance de level completando desafios
-                    </p>
-                </div>
-            ) }
+  return (
+    <div className={styles.chalengeBoxContainer}>
+      { activeChallenge ? (
+        <div className={styles.chalengeActive}>
+          <header>Ganhe {activeChallenge.amount} xp</header>
+
+          <main>
+            <img src={`icons/${activeChallenge.type}.svg`} />
+            <strong>Novo desafio</strong>
+            <p>{activeChallenge.description}</p>
+          </main>
+
+          <footer>
+            <button
+              type="button"
+              className={styles.challengeFailedButton}
+              onClick={handleChallengeFailed}
+            >
+              Falhei
+                      </button>
+            <button
+              type="button"
+              className={styles.challengeSucceededButton}
+              onClick={handleChallengeSucceeded}
+            >
+              Completei
+                      </button>
+          </footer>
         </div>
-    );
+      ) : (
+        <div className={styles.chalengeNotActive}>
+          <strong>Finalize um ciclo para receber um desafio</strong>
+          <p>
+            <img src="icons/level-up.svg" alt="Level Up" />
+                      Avance de level completando desafios
+                  </p>
+        </div>
+      )}
+    </div>
+  );
 }
